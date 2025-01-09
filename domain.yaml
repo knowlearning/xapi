@@ -1,0 +1,47 @@
+authorize:
+  sameDomain:
+    postgres: same_domain_authorization
+  crossDomain:
+    postgres: cross_domain_authorization
+postgres:
+  tables:
+    statements:
+      type: application/json;type=xapi-statement
+      columns:
+        actor: JSON
+        verb: JSON
+        object: JSON
+        result: JSON
+        context: JSON
+        authority: JSON
+  functions:
+    same_domain_authorization:
+      returns: BOOLEAN
+      language: PLpgSQL
+      body: |
+        BEGIN
+          RETURN TRUE;
+        END;
+      arguments:
+      - name: requestingUser
+        type: TEXT
+      - name: requestedScope
+        type: TEXT
+    cross_domain_authorization:
+      returns: BOOLEAN
+      language: PLpgSQL
+      body: |
+        BEGIN
+          RETURN TRUE;
+        END;
+      arguments:
+      - name: requestingDomain
+        type: TEXT
+      - name: requestingUser
+        type: TEXT
+      - name: requestedScope
+        type: TEXT
+  queries:
+    search-translations: SELECT * FROM statements LIMIT 1
+agent: |
+  
