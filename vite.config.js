@@ -5,7 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 5112,
+    port: 5444,
   },
   build: {
     target: 'esnext'
