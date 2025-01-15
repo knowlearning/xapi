@@ -17,9 +17,23 @@
         const active = { origin, verb, object }
 
         if (result) {
+          const { score, success, completion, response, extensions }  = result || {}
+          const flattened_result = {}
+
+          if (success !== undefined) flattened_result.success = success
+          if (completion !== undefined) flattened_result.completion = completion
+          if (response !== undefined) flattened_result.response = response
+          if (extensions !== undefined) flattened_result.extensions = extensions
+          if (score !== undefined) {
+            if (score.scaled !== undefined) flattened_result.scaled = score.scaled
+            if (score.raw !== undefined) flattened_result.score_raw = score.raw
+            if (score.min !== undefined) flattened_result.score_min = score.min
+            if (score.max !== undefined) flattened_result.score_max = score.max
+          }
+
           active.result = await Agent.create({
             active_type: RESULT_TYPE,
-            active: result
+            active: flattened_result
           })
         }
         if (context) {
