@@ -10,11 +10,12 @@
     Agent.log(`GOT CHILD CONNECTION!!!!!!!! ${user}`)
 
     child.on('mutate', async ({ scope, id, patch }) => {
+      Agent.log('GOT A PATCH', scope, id, patch)
       if (scope.startsWith('xapi/')) {
         const { origin, verb, object, result, context, authority } = await Agent.state(id)
         const actor = await Agent.metadata(origin).then(md => md.owner)
 
-        const active = { origin, verb, object }
+        const active = { origin, verb, object, domain: user }
 
         if (result) {
           const { score, success, completion, response, extensions }  = result || {}

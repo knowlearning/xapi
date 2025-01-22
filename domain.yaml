@@ -4,6 +4,10 @@ authorize:
   crossDomain:
     postgres: cross_domain_authorization
 postgres:
+  views:
+    test_view:
+      query: |
+        SELECT * FROM metadata
   tables:
     statements:
       type: application/json;type=xapi-statement
@@ -14,6 +18,7 @@ postgres:
         result: TEXT
         context: TEXT
         authority: TEXT
+        domain: TEXT
     results:
       type: application/json;type=xapi-result
       columns:
@@ -68,11 +73,12 @@ agent: |
     Agent.log(`GOT CHILD CONNECTION!!!!!!!! ${user}`)
 
     child.on('mutate', async ({ scope, id, patch }) => {
+      Agent.log('GOT A PATCH', scope, id, patch)
       if (scope.startsWith('xapi/')) {
         const { origin, verb, object, result, context, authority } = await Agent.state(id)
         const actor = await Agent.metadata(origin).then(md => md.owner)
 
-        const active = { origin, verb, object }
+        const active = { origin, verb, object, domain: user }
 
         if (result) {
           const { score, success, completion, response, extensions }  = result || {}
