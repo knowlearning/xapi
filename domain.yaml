@@ -12,10 +12,11 @@ postgres:
     statements:
       type: application/json;type=xapi-statement
       columns:
+        origin: TEXT
         actor: TEXT
         verb: TEXT
         object: TEXT
-        context: JSON
+        context: JSONB
         authority: TEXT
         domain: TEXT
         score_scaled: DECIMAL
@@ -26,7 +27,7 @@ postgres:
         completion: BOOLEAN
         response: TEXT
 #       duration:
-        result_extensions: JSON
+        result_extensions: JSONB
   functions:
     same_domain_authorization:
       returns: BOOLEAN
