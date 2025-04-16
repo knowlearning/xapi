@@ -27,7 +27,7 @@ postgres:
         completion: BOOLEAN
         response: TEXT
 #       duration:
-        result_extensions: JSONB
+        extensions: JSONB
   functions:
     same_domain_authorization:
       returns: BOOLEAN
@@ -67,7 +67,7 @@ agent: |
     child.on('mutate', async ({ scope, id, patch }) => {
       if (scope.startsWith('xapi/')) {
         Agent.log('GOT A PATCH', scope, id, patch)
-        const { origin, verb, object, result, context, authority } = await Agent.state(id)
+        const { origin, verb, object, result, context, authority, extensions } = await Agent.state(id)
         const actor = await Agent.metadata(origin).then(md => md.owner)
 
         const active = JSON.parse(JSON.stringify({
@@ -85,7 +85,7 @@ agent: |
           success: result?.success,
           completion: result?.completion,
           response: result?.response,
-          result_extensions: result?.extensions
+          extensions
         }))
 
         await Agent.create({
