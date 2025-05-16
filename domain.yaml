@@ -67,12 +67,12 @@ agent: |
     child.on('mutate', async ({ scope, id, patch }) => {
       if (scope.startsWith('xapi/')) {
         Agent.log('GOT A PATCH', scope, id, patch)
-        const { origin, verb, object, result, context, authority, extensions } = await Agent.state(id)
-        const actor = await Agent.metadata(origin).then(md => md.owner)
+        const { origin, actor, verb, object, result, context, extensions } = await Agent.state(id)
+        const authority = await Agent.metadata(origin).then(md => md.owner)
 
         const active = JSON.parse(JSON.stringify({
           origin,
-          actor,
+          actor: actor || authority,
           verb,
           object,
           domain: user,
