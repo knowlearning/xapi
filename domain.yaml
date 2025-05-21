@@ -56,7 +56,6 @@ postgres:
       - name: requestedScope
         type: TEXT
   queries:
-    search-translations: SELECT * FROM statements LIMIT 1
     my-statements:
       domains:
         - f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f.localhost:5888
@@ -72,6 +71,21 @@ postgres:
             $CONTEXT::TEXT[] = '{}'
             OR embed_path[:array_length($CONTEXT::TEXT[], 1)] = $CONTEXT::TEXT[]
           )
+    statements:
+      domains:
+        - c0f3a481-d4d5-4133-a198-94a325aa4536.localhost:5444
+      body: |
+        SELECT
+          statements.*,
+          metadata.created as stored
+        FROM statements
+        JOIN metadata ON metadata.id = statements.id
+        WHERE authority = $1
+          AND (
+            $2::TEXT[] = '{}'
+            OR embed_path[:array_length($2::TEXT[], 1)] = $2::TEXT[]
+          )
+        ORDER BY metadata.created
 agent: |
   import Agent from 'npm:@knowlearning/agents/deno.js'
 
