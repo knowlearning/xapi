@@ -16,7 +16,7 @@ postgres:
         actor: TEXT
         verb: TEXT
         object: TEXT
-        context: JSONB
+        embed_path: TEXT[]
         authority: TEXT
         domain: TEXT
         score_scaled: DECIMAL
@@ -57,6 +57,21 @@ postgres:
         type: TEXT
   queries:
     search-translations: SELECT * FROM statements LIMIT 1
+    my-statements:
+      domains:
+        - f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f.localhost:5888
+        - c0f3a481-d4d5-4133-a198-94a325aa4536.localhost:6061
+        - create.pilaproject.org
+        - thailand.pilaproject.org
+        - app.pilaproject.org
+      body: |
+        SELECT *
+        FROM statements
+        WHERE authority = $REQUESTER
+          AND (
+            $CONTEXT::TEXT[] = '{}'
+            OR embed_path[:array_length($CONTEXT::TEXT[], 1)] = $CONTEXT::TEXT[]
+          )
 agent: |
   import Agent from 'npm:@knowlearning/agents/deno.js'
 
@@ -76,7 +91,7 @@ agent: |
           verb,
           object,
           domain: user,
-          context,
+          embed_path: context,
           authority,
           score_scaled: result?.score?.scaled,
           score_raw: result?.score?.raw,
