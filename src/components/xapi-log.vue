@@ -1,0 +1,33 @@
+<template>
+	<div>
+		<div> Number :: {{ xapi.length }}</div>
+		<hr>
+		<XapiTable
+			:data="[...xapi].reverse()"
+			:showOnlyTheseKeys="[ 'stored', 'actor', 'verb', 'object', 'success', 'embed_path' ]"
+		/>
+	</div>
+</template>
+
+<script setup>
+import { ref } from 'vue'
+import XapiTable from './xapi-table.vue'
+
+const dumbdumb = 'f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f'
+const mattie = 'c0f3a481-d4d5-4133-a198-94a325aa4536'
+
+const xapi = ref(null)
+
+await pollXapi()
+
+async function pollXapi() {
+	xapi.value = await fetchXapi()
+	setTimeout(pollXapi, 2000)
+}
+
+async function fetchXapi(user = dumbdumb, empath = []) {
+	return Agent.query('statements', [user, empath], 'xapi.knowlearning.systems')
+}
+
+
+</script>

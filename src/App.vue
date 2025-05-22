@@ -1,11 +1,9 @@
-<script setup>
-</script>
-
 <template>
-  <div>
-    check out the agent
-  </div>
+  <Suspense>
+    <XapiLog />
+  </Suspense>
 </template>
 
-<style scoped>
-</style>
+<script setup>
+import XapiLog from './components/xapi-log.vue'
+</script>
