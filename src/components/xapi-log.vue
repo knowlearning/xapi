@@ -1,7 +1,6 @@
 <template>
 	<div>
-		<div> Number :: {{ xapi.length }}</div>
-		<hr>
+		<div>{{ xapi.length }} statements</div>
 		<XapiTable
 			:data="[...xapi].reverse()"
 			:showOnlyTheseKeys="[ 'authority', 'actor', 'verb', 'object', 'source', 'stored', 'success', 'score_raw', 'embed_path' ]"
