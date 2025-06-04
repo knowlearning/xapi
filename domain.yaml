@@ -28,6 +28,12 @@ postgres:
         response: TEXT
 #       duration:
         extensions: JSONB
+      indices:
+        authority:
+          column: authority
+        # embed_path:
+        #   gin: true
+        #   column: embed_path
   functions:
     same_domain_authorization:
       returns: BOOLEAN
@@ -72,6 +78,27 @@ postgres:
             $CONTEXT::TEXT[] = '{}'
             OR embed_path[:array_length($CONTEXT::TEXT[], 1)] = $CONTEXT::TEXT[]
           )
+    statements:
+      domains:
+        - localhost:5444
+        - c0f3a481-d4d5-4133-a198-94a325aa4536.localhost:5444
+        - f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f.localhost:5888
+        - c0f3a481-d4d5-4133-a198-94a325aa4536.localhost:6061
+        - create.pilaproject.org
+        - thailand.pilaproject.org
+        - app.pilaproject.org
+      body: |
+        SELECT
+          statements.*,
+          metadata.created as stored
+        FROM statements
+        JOIN metadata ON metadata.id = statements.id
+        WHERE authority = ANY($1)
+          AND (
+            $2::TEXT[] = '{}'
+            OR embed_path[:array_length($2::TEXT[], 1)] = $2::TEXT[]
+          )
+        ORDER BY metadata.created
 agent: |
   import Agent from 'npm:@knowlearning/agents/deno.js'
 
