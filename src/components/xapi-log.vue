@@ -4,7 +4,7 @@
 		<hr>
 		<XapiTable
 			:data="[...xapi].reverse()"
-			:showOnlyTheseKeys="[ 'stored', 'actor', 'verb', 'object', 'success', 'embed_path' ]"
+			:showOnlyTheseKeys="[ 'authority', 'actor', 'verb', 'object', 'source', 'stored', 'success', 'score_raw', 'embed_path' ]"
 		/>
 	</div>
 </template>
