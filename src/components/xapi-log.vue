@@ -25,7 +25,7 @@ async function pollXapi() {
 	setTimeout(pollXapi, 2000)
 }
 
-async function fetchXapi(users = [dumbdumb], empath = []) {
+async function fetchXapi(users = [mattie, dumbdumb], empath = []) {
 	console.log('fetching....')
 	return Agent.query('statements', [users, empath], 'xapi.knowlearning.systems').then(result => {
 		console.log('got statements....', result)
