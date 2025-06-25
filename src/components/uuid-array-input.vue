@@ -4,11 +4,9 @@
       v-model="userInput"
       @input="handleInput"
       type="text"
-      :class="{
-        invalid: error
-      }"
-
+      :class="{ invalid: error }"
     />
+    {{ props.placeholder }}
     <p v-if="error" style="color: red; font-size: 0.6rem; margin: 2px 0 0 2px;">{{ error }}</p>
   </div>
 </template>
@@ -18,7 +16,9 @@ import { ref } from 'vue'
 import { validate as isValidUUID } from 'uuid'
 import debounce from 'lodash.debounce'
 
-const userInput = ref('your uuid path here...')
+const props = defineProps([ 'placeholder' ])
+const userInput = ref(props.placeholder)
+
 const outputArray = ref([ ])
 const error = ref(null)
 
@@ -54,6 +54,5 @@ input {
 }
 input.invalid {
   border-color: lightcoral;
-/*  outline-color: lightcoral;*/
 }
 </style>
