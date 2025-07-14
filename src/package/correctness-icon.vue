@@ -20,24 +20,28 @@
 
   const props = defineProps({
     user: String,
-    lastCheck: Number,
+    onNewStatement: Function,
     object: String,
     embed_path: Array
   })
 
   let start = 0
-  let lastPull = 0
+  let lastCheck = 0
   const statusRef = ref('unknown')
 
-  watch(
-    () => props.lastCheck,
-    async () => {
-      lastPull = props.lastCheck
-      const [{ status }] = await Agent.query('correctness', [props.user, start, props.lastCheck, props.object, props.context])
-      if (status !== 'unknown') statusRef.value = status
-    },
-    { immediate: true }
-  )
+  props.onNewStatement(statement => {
+    //  TODO: check if statement should cause us to re-evaluate correctness query
+    //        make sure to debounce the checks
+    lastCheck = Date.now()
+    update()
+  })
+
+  update()
+
+  async function update() {
+    const [{ status }] = await Agent.query('correctness', [props.user, start, lastCheck, props.object, props.context])
+    if (status !== 'unknown') statusRef.value = status
+  }
 </script>
 
 <style scoped>
