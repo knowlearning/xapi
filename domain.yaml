@@ -4,10 +4,6 @@ authorize:
   crossDomain:
     postgres: cross_domain_authorization
 postgres:
-  views:
-    test_view:
-      query: |
-        SELECT * FROM metadata
   tables:
     statements:
       type: application/json;type=xapi-statement

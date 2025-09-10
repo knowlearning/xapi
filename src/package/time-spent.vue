@@ -17,6 +17,7 @@
   let start = 0
   let lastCheck = 0
   const statusRef = ref('unknown')
+  const isOpen = ref(false)
 
   props.onNewStatement(statement => {
     //  TODO: check if statement should cause us to re-evaluate
