@@ -69,6 +69,7 @@ postgres:
         - pila.gforcesolution.com
         - polska-rct-2025.pilaproject.org
         - france-rct-2025.pilaproject.org
+        - testing.pilaproject.org
         - app.pilaproject.org
       body: |
         SELECT *
@@ -90,6 +91,7 @@ postgres:
         - pila.gforcesolution.com
         - polska-rct-2025.pilaproject.org
         - france-rct-2025.pilaproject.org
+        - testing.pilaproject.org
         - app.pilaproject.org
       body: |
         SELECT
