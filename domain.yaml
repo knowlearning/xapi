@@ -105,6 +105,35 @@ postgres:
             OR embed_path[:array_length($2::TEXT[], 1)] = $2::TEXT[]
           )
         ORDER BY metadata.created
+    survey-answers: |
+      WITH answered AS (
+        SELECT
+          s.actor                                   AS student_or_teacher_id,
+          (s.extensions->'item'->>'name')           AS item_name,
+          (s.extensions->'item'->'userData'->>0)    AS item_value,
+          m.created::timestamptz AS ts
+        FROM statements AS s
+        LEFT JOIN metadata AS m ON m.id = s.id
+        WHERE s.verb = 'answered'
+          AND $1 = ANY(s.embed_path)
+          AND (s.extensions->'item'->>'name') IS NOT NULL
+          AND (s.extensions->'item'->>'name') <> ''
+      ),
+      latest AS (
+        SELECT DISTINCT ON (student_or_teacher_id, item_name)
+          student_or_teacher_id,
+          item_name,
+          item_value
+        FROM answered
+        ORDER BY student_or_teacher_id, item_name, ts DESC
+      )
+      SELECT
+        student_or_teacher_id AS "Student or teacher ID",
+        jsonb_object_agg(item_name, item_value ORDER BY item_name) AS answers
+      FROM latest
+      GROUP BY student_or_teacher_id
+      ORDER BY "Student or teacher ID"
+
 agent: |
   import Agent from 'npm:@knowlearning/agents/deno.js'
 

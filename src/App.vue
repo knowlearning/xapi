@@ -1,13 +1,8 @@
 <template>
-  <CorrectnessIcon :onNewStatement="() => {}" />
-  <TimeSpent :onNewStatement="() => {}"  />
   <Suspense>
-    <XapiLog />
+    KnowLearning xAPI
   </Suspense>
 </template>
 
 <script setup>
-  import CorrectnessIcon from './package/correctness-icon.vue'
-  import TimeSpent from './package/time-spent.vue'
-  import XapiLog from './components/xapi-log.vue'
 </script>
