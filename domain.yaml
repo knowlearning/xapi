@@ -105,6 +105,17 @@ postgres:
             OR embed_path[:array_length($2::TEXT[], 1)] = $2::TEXT[]
           )
         ORDER BY metadata.created
+    statements-in-context:
+      domains:
+        - f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f.localhost:5656
+      body: |
+        SELECT
+          statements.*,
+          metadata.created as stored
+        FROM statements
+        JOIN metadata ON metadata.id = statements.id
+        WHERE $1 = ANY(statements.embed_path)
+        ORDER BY metadata.created
     survey-answers: |
       WITH answered AS (
         SELECT
