@@ -115,6 +115,10 @@ postgres:
         FROM statements
         JOIN metadata ON metadata.id = statements.id
         WHERE $1 = ANY(statements.embed_path)
+          AND $REQUESTER IN (
+            'f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f',
+            'c0f3a481-d4d5-4133-a198-94a325aa4536'
+          )
         ORDER BY metadata.created
     survey-answers: |
       WITH answered AS (
