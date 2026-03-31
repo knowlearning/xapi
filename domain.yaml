@@ -71,6 +71,7 @@ postgres:
         - france-rct-2025.pilaproject.org
         - testing.pilaproject.org
         - app.pilaproject.org
+        - ui-dev.pilaproject.org
       body: |
         SELECT *
         FROM statements
@@ -93,6 +94,7 @@ postgres:
         - france-rct-2025.pilaproject.org
         - testing.pilaproject.org
         - app.pilaproject.org
+        - ui-dev.pilaproject.org
       body: |
         SELECT
           statements.*,
