@@ -1,6 +1,6 @@
 <template>
   <Suspense>
-    KnowLearning xAPI
+    KnowLearning xAPI ...
   </Suspense>
 </template>
 
