@@ -1,5 +1,6 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
+import Agent from '@knowlearning/agents'
 import AdminQueriesControls from './AdminQueriesControls.vue'
 import AdminQueriesResults from './AdminQueriesResults.vue'
 
@@ -15,8 +16,6 @@ const title = computed(() =>
 )
 
 async function runQuery(parameters) {
-  console.log('admin-statements query parameters:', parameters)
-
   hasRunQuery.value = true
   loading.value = true
   statements.value = []
@@ -25,16 +24,19 @@ async function runQuery(parameters) {
   await nextTick()
   queryOpen.value = false
 
-  // Temporary simulated query delay
-  await new Promise(resolve => setTimeout(resolve, 2000))
-
-  // Eventually:
-  // statements.value = await Agent.query(
-  //   'admin-statements',
-  //   parameters
-  // )
-
-  loading.value = false
+  try {
+    statements.value = await Agent.query(
+      'admin-statements',
+      parameters
+    ) || []
+  }
+  catch (error) {
+    console.error('admin-statements query failed:', error)
+    statements.value = []
+  }
+  finally {
+    loading.value = false
+  }
 }
 
 function showQuery() {

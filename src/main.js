@@ -9,6 +9,7 @@ import * as directives from 'vuetify/directives'
 
 import App from './App.vue'
 import AdminQueries from './AdminQueries.vue'
+import AdminQueriesAccessDenied from './AdminQueriesAccessDenied.vue'
 import Agent from '@knowlearning/agents'
 
 window.Agent = Agent
@@ -18,9 +19,15 @@ const vuetify = createVuetify({
   directives
 })
 
+const ADMIN_QUERY_USERS = [
+  'f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f',
+  'c0f3a481-d4d5-4133-a198-94a325aa4536',
+  'aabc6c9c-a4f8-405b-9de3-76588997d52f'
+]
+
 async function initialLoad() {
   const {
-    auth: { provider }
+    auth: { user, provider }
   } = await Agent.environment()
 
   if (provider === 'anonymous') {
@@ -35,7 +42,9 @@ async function initialLoad() {
     RootComponent = App
   }
   else if (path === '/admin-queries') {
-    RootComponent = AdminQueries
+    RootComponent = ADMIN_QUERY_USERS.includes(user)
+      ? AdminQueries
+      : AdminQueriesAccessDenied
   }
   else {
     RootComponent = App
