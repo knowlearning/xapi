@@ -8,6 +8,7 @@ const queryOpen = ref(true)
 const hasRunQuery = ref(false)
 const loading = ref(false)
 const statements = ref([])
+const validationError = ref('')
 
 const title = computed(() =>
   queryOpen.value
@@ -16,6 +17,17 @@ const title = computed(() =>
 )
 
 async function runQuery(parameters) {
+  const hasNonDateFilter = parameters
+    .slice(0, 6)
+    .some(value => Array.isArray(value) && value.length > 0)
+
+  if (!hasNonDateFilter) {
+    validationError.value =
+      'Enter at least one non-date filter before running the query.'
+    return
+  }
+
+  validationError.value = ''
   hasRunQuery.value = true
   loading.value = true
   statements.value = []
@@ -40,6 +52,7 @@ async function runQuery(parameters) {
 }
 
 function showQuery() {
+  validationError.value = ''
   queryOpen.value = true
 }
 </script>
@@ -76,6 +89,17 @@ function showQuery() {
             'query-controls--overlay': hasRunQuery
           }"
         >
+          <v-alert
+            v-if="validationError"
+            type="warning"
+            variant="tonal"
+            closable
+            class="validation-alert"
+            @click:close="validationError = ''"
+          >
+            {{ validationError }}
+          </v-alert>
+
           <AdminQueriesControls
             @run-query="runQuery"
           />
@@ -95,5 +119,10 @@ function showQuery() {
   left: 0;
   overflow-y: auto;
   background: rgb(var(--v-theme-background));
+}
+
+.validation-alert {
+  margin: 16px auto 0;
+  max-width: 1200px;
 }
 </style>
