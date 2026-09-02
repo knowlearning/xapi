@@ -176,9 +176,9 @@ postgres:
         FROM statements
         JOIN metadata ON metadata.id = statements.id
         WHERE $REQUESTER IN (
-          "f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f", # JASON
-          "c0f3a481-d4d5-4133-a198-94a325aa4536", # MATT
-          "aabc6c9c-a4f8-405b-9de3-76588997d52f"  # EDU PILA
+          'f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f', -- JASON
+          'c0f3a481-d4d5-4133-a198-94a325aa4536', -- MATT
+          'aabc6c9c-a4f8-405b-9de3-76588997d52f'  -- EDU PILA
         )
 
           -- $1: authority IDs
