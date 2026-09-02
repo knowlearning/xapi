@@ -1,159 +1,97 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
+import AdminQueriesControls from './AdminQueriesControls.vue'
+import AdminQueriesResults from './AdminQueriesResults.vue'
 
-const authorities = ref('')
-const actors = ref('')
-const verbs = ref('')
-const objects = ref('')
-const domains = ref('')
-const embedPath = ref('')
-const storedAfter = ref('')
-const storedBefore = ref('')
+const queryOpen = ref(true)
+const hasRunQuery = ref(false)
+const loading = ref(false)
+const statements = ref([])
 
-function toArray(value) {
-  return value
-    .split(',')
-    .map(item => item.trim())
-    .filter(Boolean)
-}
+const title = computed(() =>
+  queryOpen.value
+    ? 'Admin XAPI Queries'
+    : 'XAPI Query Results'
+)
 
-function toTimestamp(value) {
-  return value
-    ? new Date(value).toISOString()
-    : null
-}
-
-function runQuery() {
-  const parameters = [
-    toArray(authorities.value),
-    toArray(actors.value),
-    toArray(verbs.value),
-    toArray(objects.value),
-    toArray(domains.value),
-    toArray(embedPath.value),
-    toTimestamp(storedAfter.value),
-    toTimestamp(storedBefore.value)
-  ]
-
+async function runQuery(parameters) {
   console.log('admin-statements query parameters:', parameters)
 
+  hasRunQuery.value = true
+  loading.value = true
+  statements.value = []
+
+  // Render the results underneath before sliding the controls away.
+  await nextTick()
+  queryOpen.value = false
+
+  // Temporary simulated query delay
+  await new Promise(resolve => setTimeout(resolve, 2000))
+
   // Eventually:
-  // const statements = await Agent.query(
+  // statements.value = await Agent.query(
   //   'admin-statements',
   //   parameters
   // )
+
+  loading.value = false
+}
+
+function showQuery() {
+  queryOpen.value = true
 }
 </script>
 
 <template>
-  <main class="admin-queries">
-    <h1>Admin XAPI Queries</h1>
+  <v-app>
+    <v-app-bar color="primary">
+      <v-app-bar-title>
+        {{ title }}
+      </v-app-bar-title>
 
-    <form @submit.prevent="runQuery">
-      <label>
-        Authorities
-        <input
-          v-model="authorities"
-          type="text"
-          placeholder="user-id-1, user-id-2"
-        />
-      </label>
+      <v-btn
+        v-if="hasRunQuery && !queryOpen"
+        variant="text"
+        prepend-icon="mdi-filter"
+        @click="showQuery"
+      >
+        Show Query
+      </v-btn>
+    </v-app-bar>
 
-      <label>
-        Actors
-        <input
-          v-model="actors"
-          type="text"
-          placeholder="actor-id-1, actor-id-2"
-        />
-      </label>
+    <v-main>
+      <AdminQueriesResults
+        v-if="hasRunQuery"
+        :statements="statements"
+        :loading="loading"
+      />
 
-      <label>
-        Verbs
-        <input
-          v-model="verbs"
-          type="text"
-          placeholder="answered, completed"
-        />
-      </label>
-
-      <label>
-        Objects
-        <input
-          v-model="objects"
-          type="text"
-          placeholder="object-id-1, object-id-2"
-        />
-      </label>
-
-      <label>
-        Domains
-        <input
-          v-model="domains"
-          type="text"
-          placeholder="forms.pilaproject.org"
-        />
-      </label>
-
-      <label>
-        Embed path
-        <input
-          v-model="embedPath"
-          type="text"
-          placeholder="class-id, assignment-id"
-        />
-      </label>
-
-      <label>
-        Stored on or after
-        <input
-          v-model="storedAfter"
-          type="datetime-local"
-        />
-      </label>
-
-      <label>
-        Stored before
-        <input
-          v-model="storedBefore"
-          type="datetime-local"
-        />
-      </label>
-
-      <button type="submit">
-        Run Query
-      </button>
-    </form>
-  </main>
+      <v-slide-y-reverse-transition>
+        <div
+          v-if="queryOpen"
+          :class="{
+            'query-controls': true,
+            'query-controls--overlay': hasRunQuery
+          }"
+        >
+          <AdminQueriesControls
+            @run-query="runQuery"
+          />
+        </div>
+      </v-slide-y-reverse-transition>
+    </v-main>
+  </v-app>
 </template>
 
 <style scoped>
-.admin-queries {
-  width: min(640px, calc(100% - 32px));
-  margin: 40px auto;
-}
-
-form {
-  display: grid;
-  gap: 16px;
-}
-
-label {
-  display: grid;
-  gap: 6px;
-  font-weight: 600;
-}
-
-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 10px 12px;
-  font: inherit;
-}
-
-button {
-  padding: 12px 16px;
-  font: inherit;
-  cursor: pointer;
+.query-controls--overlay {
+  position: fixed;
+  z-index: 1000;
+  top: 64px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  background: rgb(var(--v-theme-background));
 }
 </style>
