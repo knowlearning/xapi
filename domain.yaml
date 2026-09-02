@@ -165,7 +165,73 @@ postgres:
       FROM latest
       GROUP BY student_or_teacher_id
       ORDER BY "Student or teacher ID"
+    admin-statements:
+      domains:
+        - your-admin-interface.example.org
+        # Add other trusted application domains here
+      body: |
+        SELECT
+          statements.*,
+          metadata.created AS stored
+        FROM statements
+        JOIN metadata ON metadata.id = statements.id
+        WHERE $REQUESTER IN (
+          "f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f", # JASON
+          "c0f3a481-d4d5-4133-a198-94a325aa4536", # MATT
+          "aabc6c9c-a4f8-405b-9de3-76588997d52f"  # EDU PILA
+        )
 
+          -- $1: authority IDs
+          AND (
+            COALESCE(cardinality($1::TEXT[]), 0) = 0
+            OR statements.authority = ANY($1::TEXT[])
+          )
+
+          -- $2: actor IDs
+          AND (
+            COALESCE(cardinality($2::TEXT[]), 0) = 0
+            OR statements.actor = ANY($2::TEXT[])
+          )
+
+          -- $3: verbs
+          AND (
+            COALESCE(cardinality($3::TEXT[]), 0) = 0
+            OR statements.verb = ANY($3::TEXT[])
+          )
+
+          -- $4: object IDs
+          AND (
+            COALESCE(cardinality($4::TEXT[]), 0) = 0
+            OR statements.object = ANY($4::TEXT[])
+          )
+
+          -- $5: originating domains
+          AND (
+            COALESCE(cardinality($5::TEXT[]), 0) = 0
+            OR statements.domain = ANY($5::TEXT[])
+          )
+
+          -- $6: embed-path prefix
+          AND (
+            COALESCE(cardinality($6::TEXT[]), 0) = 0
+            OR statements.embed_path[
+              :cardinality($6::TEXT[])
+            ] = $6::TEXT[]
+          )
+
+          -- $7: stored on or after
+          AND (
+            $7::TIMESTAMP IS NULL
+            OR metadata.created >= $7::TIMESTAMP
+          )
+
+          -- $8: stored before
+          AND (
+            $8::TIMESTAMP IS NULL
+            OR metadata.created < $8::TIMESTAMP
+          )
+
+        ORDER BY metadata.created, statements.id
 agent: |
   import Agent from 'npm:@knowlearning/agents/deno.js'
 
