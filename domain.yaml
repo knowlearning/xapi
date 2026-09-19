@@ -90,6 +90,7 @@ postgres:
         FROM statements
         JOIN metadata ON metadata.id = statements.id
         WHERE authority = ANY($1)
+          AND statements.verb IS DISTINCT FROM 'chatbot_interaction'
           AND (
             $2::TEXT[] = '{}'
             OR embed_path[:array_length($2::TEXT[], 1)] = $2::TEXT[]
@@ -106,6 +107,7 @@ postgres:
         FROM statements
         JOIN metadata ON metadata.id = statements.id
         WHERE $1 = ANY(statements.embed_path)
+          AND statements.verb IS DISTINCT FROM 'chatbot_interaction'
           AND $REQUESTER IN (
             'f74e9cb3-2b53-4c85-9b0c-f1d61b032b3f',
             'c0f3a481-d4d5-4133-a198-94a325aa4536',
@@ -167,7 +169,7 @@ postgres:
       ORDER BY "Student or teacher ID"
     admin-statements:
       domains:
-        - your-admin-interface.example.org
+        - localhost:5444
         # Add other trusted application domains here
       body: |
         SELECT
